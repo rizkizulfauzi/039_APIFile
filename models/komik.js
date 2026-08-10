@@ -34,6 +34,18 @@ module.exports = (sequelize, DataTypes) => {
     },
   );
 
-  
+  Komik.associate = (models) => {
+    Komik.belongsTo(models.Penulis, {
+      foreignKey: "penulis_id",
+      as: "penulis",
+    });
+
+    Komik.belongsToMany(models.Genre, {
+      through: "komik_genre",
+      foreignKey: "komik_id",
+      otherKey: "genre_id",
+      as: "genre",
+    });
+  };
   return Komik;
 };
