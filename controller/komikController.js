@@ -50,3 +50,34 @@ async function createKomik(req, res) {
     res.status(500).json({ error: "failed to create komik" });
   }
 }
+
+async function updateKomik(req, res) {
+  const { id } = req.params;
+  const { judul, sinopsis, tahun_terbit, penulis_id } = req.body;
+  try {
+    const komik = await db.Komik.findByPk(id);
+    if (!komik) {
+      return res.status(404).json({ error: "komik not found" });
+    }
+    
+    const penulis = await db.Penulis.findByPk(penulis_id);
+    if (!penulis) {
+      return res.status(404).json({ error: "penulis not found" });
+    }
+
+    const gambar = req.file ? req.file.filename : null;
+
+    komik.judul = judul;
+    komik.sinopsis = sinopsis;
+    komik.tahun_terbit = tahun_terbit;
+    komik.penulis_id = penulis_id;
+    if (gambar) {
+      komik.gambar = gambar;
+    }
+    await komik.save();
+    res.status(200).json(komik);
+  } catch (err) {
+    console.error("error updating komik", err.message);
+    res.status(500).json({ error: "failed to update komik" });
+  }
+}
